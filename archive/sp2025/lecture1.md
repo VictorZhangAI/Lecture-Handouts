@@ -33,7 +33,7 @@ Ubuntu2404 config --default-user ubuntu
 ```
 
 7.在``C:\用户\<用户名>\``处新建文本文档，更名为``.wslconfig``，使用记事本打开，输入以下内容并保存  
-```toml
+```
 [wsl2]
 networkingMode=mirrored
 ```
