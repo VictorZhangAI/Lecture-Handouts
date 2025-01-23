@@ -10,7 +10,8 @@ CJKoptions: AutoFakeBold
 ## 课前准备
 0.如果你使用的是苹果电脑，你可以跳过课前准备步骤。macOS和Linux之间的关系详见“UNIX史话”一节。
 
-1. W-r，输入powershell  
+1.W-r，输入powershell  
+
 2.依次键入以下指令安装WSL2  
 ```Powershell
 wsl --install --no-distribution
