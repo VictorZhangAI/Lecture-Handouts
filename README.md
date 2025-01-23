@@ -8,8 +8,8 @@ Feel free to fork and pull request to this repo.
 Post issues in official QQ group: (TODO)
 
 ## Main Topics
+Spring 2025:  
 <ul>
 <li>CLI tutorial & right way of learning</li>
-<li>Git & Github</li>
 <li>Hello(again), C!</li>
 </ul>
