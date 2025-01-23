@@ -1,8 +1,3 @@
----
-CJKmainfont: Kaiti
-CJKoptions: AutoFakeBold
----
-
 # Lecture 1
 
 (注：下文中C指代ctrl，F指代fn，W指代windows，A指代alt)
