@@ -2,6 +2,8 @@
 
 (注：下文中C指代ctrl，F指代fn，W指代windows，A指代alt)  
 
+> 这是一个Markdown写成的讲义，你可以将它线上转化为pdf，或者使用``vscode``的Markdown侧边预览进行查看。如果你想获得更美观的视觉体验还可以试试<a href="https://marktext.weero.net/download/">MarkText</a>
+
 ## 课前准备
 
 ```shell
@@ -49,7 +51,36 @@ int main()
 
 ## Hello, world的一生
 
+写完了，你应该找一个编译器将``hello.c``编译为可执行文件。你有两种选择，由GNU维护的gcc和由llvm维护的clang。gcc的使用范围更广一些。  
+```shell
+gcc hello.c
+./a.out
+```
+你不好奇这中间发生了什么吗，不是说CPU只认识0和1吗？  
 
+### 预处理器和宏
+
+(TODO)
+
+## debug
+
+### valgrind
+
+(TODO)
+
+### gdb
+
+(TODO)
+
+## 大型工程的构建
+
+### 头文件
+
+(TODO)
+
+### Makefile
+
+(TODO)
 
 ## 练习题
 
@@ -59,14 +90,18 @@ int main()
 
 ### 互联网
 (1)Hello和Hello(again)分别致敬了两场著名的科技发布会，你知道它们分别是谁吗？  
-(2)
+(2)  
+(?)你察觉到了吗？我们熟知的计算机世界建立在“绝对可信”的代码之上。我们享受着“绝对可信”的软件并自由地使用它们。然而<a href="https://cve.mitre.org/cgi-bin/cvekey.cgi?keyword=linux">Linux内核bug</a>光2024年就产生了将近三千个，Windows更新后产生致命问题也不是什么新鲜事。哪怕是gdb，在某些刁钻的bug前还是会破功，报逃脱了层层错误处理之后还活下来的段错误。你对此有什么感想？
 
 ## 拓展阅读
 
 <a href="https://www.bilibili.com/video/BV1qb4y1R7Z4/?spm_id_from=333.1387.favlist.content.click&vd_source=8204d1a0fabafab989c42faaec9e4a8c">什么是机器语言？</a>  
 <a href="https://colorcomputerarchive.com/repo/Documents/Books/The%20C%20Programming%20Language%20%28Kernighan%20Ritchie%29.pdf">The C Programming Language</a> 确切来说这本书不只是C，更像是《如何在Ken Thompson出生之前手搓UNIX标准库的一个小部分》  
 <a href="https://www.cs.sfu.ca/~ashriram/Courses/CS295/assets/books/CSAPP_2016.pdf">Computer Systems: A Programmer's Perspective</a> 借助C，了解计算机系统的全貌  
-<a href="https://resources.sei.cmu.edu/downloads/secure-coding/assets/sei-cert-c-coding-standard-2016-v01.pdf">CERT C Coding Standard</a> 怎么编写可靠的C程序？你需要它！  
+<a href="https://akaedu.github.io/book/index.html">Linux C一站式学习</a> 一本堪称仁至义尽的中文C教材  
 
 ## 实用链接
 
+<a href="https://gcc.gnu.org/onlinedocs/">gcc online documentation</a>  
+<a href="https://www.sourceware.org/gdb/documentation/">gdb documantation</a>  
+<a href="https://resources.sei.cmu.edu/downloads/secure-coding/assets/sei-cert-c-coding-standard-2016-v01.pdf">CERT C Coding Standard</a> 怎么编写可靠的C程序？你需要它！  
