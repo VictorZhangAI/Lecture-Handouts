@@ -341,8 +341,7 @@ Just happy hacking, 像业余者一样自信（见拓展阅读）
 (5)使用``lscpu``查看本机CPU和高速缓存相关的信息  
 (6)使用``neofetch``，并将命令的输出结果截图发在课程群中装哔  
 (7)尝试在VMware或者Oracle VirtualBox中安装Ubuntu或者Debian。如果你备份好了数据也可以尝试一下物理机安装  
-(8)``find``可以用于查找文件，在``man find``中查看一下基本的使用方法（呃......这也太长了！要不试试“实用链接”一栏的tldr？）
-
+(8)``find``可以用于查找文件，在``man find``中查看一下基本的使用方法（呃......这也太长了！要不试试“实用链接”一栏的tldr？）  
 (?)DANGER ZONE: 在explainshell（见实用链接一栏）中查找以下命令含义：
 ```shell
 sudo rm -rf /*
