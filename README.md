@@ -13,3 +13,7 @@ Spring 2025:
 <li>CLI tutorial & right way of learning</li>
 <li>Hello(again), C!</li>
 </ul>
+
+## Contributors:
+<a href="https://github.com/VictorZhangAI">VZstless</a>
+<a href="https://github.com/Utahamo">Utahamo</a>
