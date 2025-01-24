@@ -41,6 +41,8 @@ networkingMode=mirrored
 
 > 说实话，WSL的安装算是Linux各种载体中最为简便的一种了。如果你在上述步骤卡住了请及时求助，不要放弃并选择下载某个配好的Linux镜像绕路，你应当拥有使用纯净、由你定制的Linux Distro的权力！
 
+> 你还可以尝试在VMware或者Oracle VirtualBox中安装Linux虚拟机，或者如果你备份好了文件也可以尝试安装物理机Linux。我们把它设置为了一道练习题，你可以课后试试！
+
 ## Hello, Linux!
 
 ### 初见
@@ -118,6 +120,12 @@ ls *dir
 
 至于写文件，在Linux中内置了一个文本编辑器``nano``，你可以使用``nano <filename>``打开它。这个命令的默认行为是在当前路径下有这个文件的时候打开这个文件，如果没有就新建文件。好了，你已经学会nano了。  
 还不信？使用方向键移动光标，剩下的操作方法都在最下头写着呢，顺带一提，有些表示方法中会用``^``代表Ctrl键  
+Linux中也有一些其他的写文件命令，比如``tee``：
+```shell
+tee hello.txt << EOF
+# 还记得EOF吗？它是文件结束标识符
+```
+管道是一个强大的工具，不过这个等会儿再说。
 
 ### 帮手们
 
@@ -271,6 +279,12 @@ echo "This is an English Sentence" > hello.txt
 ```shell
 echo "This is another sentence" >> hello.txt
 ```
+你还可以使用``tee``来进行管道写入：
+```shell
+# ifconfig用于查看本机的网络信息
+ifconfig | net.txt
+```
+
 想想看，同样的任务交给Windows你会怎么做？  
 
 再比方说，你有一个新的项目，这个项目的文件夹有如下的层次关系：
