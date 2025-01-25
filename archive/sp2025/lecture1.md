@@ -20,7 +20,7 @@ wsl --set-default-version 2
 4.在弹窗中输入用户名与用户密码，一般我习惯自用机直接用分发版的名称进行命名，比如用户名ubuntu，密码也是ubuntu
 
 > 不要在这时关闭弹窗！如果关闭了请在Powershell中使用命令``wsl --unregister Ubuntu-24.04``
-并回到第二步重新安装！
+并回到第三步重新安装！
 
 
 5.键入以下命令将Ubuntu-24.04导出到D盘  
@@ -53,7 +53,7 @@ networkingMode=mirrored
 wsl -d Ubuntu-24.04
 ```
 之后，你便进入了Linux。对，你只需要命令行，也就是Linux Shell就能和Linux进行互动了。  
-无论什么系统，你大概率都会问出一个问题：<br>我的XXX文件在哪儿？</br>一个Windows用户的回答大概率会以磁盘的某个分区，比如“C盘”或者“D盘”开头，每当切换到一个子文件夹的时候就要使用``\``分割。比如：
+无论什么系统，你大概率都会问出一个问题：<strong>我的XXX文件在哪儿？</strong>一个Windows用户的回答大概率会以磁盘的某个分区，比如“C盘”或者“D盘”开头，每当切换到一个子文件夹的时候就要使用``\``分割。比如：
 ```
 C:\Users\Lenovo\Applications\DevCpp
 ```
@@ -213,9 +213,20 @@ d r-x rwx ---
 ```shell
 sudo chmod 777 semester
 ```
+
 三个一组，把rwx想象成二进制位，比如rwx是111，rw-是110，---是000，这样上方命令的777就是``rwxrwxrwx``，也就是赋予文件所有用户，同群组用户和其他用户读，写，和执行文件的权限  
 
 修改文件权限显然也是一种危险操作，需要使用超级用户权限  
+
+```markdown
+2025.1.25: chmod在WSL中可能并不起作用。如果不起作用，请使用``sudo nano /etc/wsl.conf``然后输入  
+[automount]  
+options = "metadata"  
+打开另一个powershell，输入  
+wsl --shutdown  
+wsl -d Ubuntu-24.04  
+再尝试一下修改权限
+```
 
 当然，你还可以使用``sudo -i``直接切换到超级用户进行任意操作，但是请注意权限问题，超级用户进行操作的一些文件普通用户可能无法进行相同权限的操作！
 

@@ -23,6 +23,6 @@ cat hello.c
 ```
 <ul>
 <li>Linux Basics</li>
-<li>Git & Github</li>
+<li>Git & Github(Abort, tutorials are overflowing and boring, I don't want to repeat manual as a robot)</li>
 <li>Hello(again), C!</li>
 <ul>
