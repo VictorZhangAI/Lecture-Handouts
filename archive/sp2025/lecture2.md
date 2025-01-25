@@ -4,6 +4,8 @@
 
 > 这是一个Markdown写成的讲义，你可以将它线上转化为pdf，或者使用``vscode``的Markdown侧边预览进行查看。如果你想获得更美观的视觉体验还可以试试<a href="https://marktext.weero.net/download/">MarkText</a>
 
+> <a href="https://chatgpt.com/">ChatGPT</a>比你想象的强大。如果你觉得查手册太费时间而你只是稍微好奇某个东西可以先尝试问问AI
+
 ## 课前准备
 
 ```shell
@@ -53,17 +55,134 @@ gcc hello.c
 ```shell
 gcc hello.c -o hello
 ```
-你不好奇这中间发生了什么吗，不是说CPU只认识0和1吗？  
+当你的程序出现错误时编译器会在初期进行发现并提示，其中``warning``不影响编译，但保留warning会导致程序兼容性不佳甚至有逻辑错误，而``error``会导致程序不通过编译。
+gcc可以为你发现语法错误甚至是程序中不严谨的地方，这里涉及到了一些flag：
+```shell
+-Wall #一些更加细致的flag的集合，将所有的容易修改的warning全部显示
+-Werror #把所有的warning全部转化成error
+-Wextra #极其严格，甚至不允许指针和(int) 0进行比较
+-w #反其道而行，连warning都不显示了
+```
+日常我们只要``-Wall -Werror``就行  
+```shell
+gcc -Wall -Werror hello.c -o hello
+```
+不过话说回来，你不好奇从``.c``到可执行文件这中间发生了什么吗，不是说CPU只认识0和1吗？  
 
-### 预处理器和宏
+### 预处理
 
-(TODO)
+预处理是先于编译的一个步骤，这一步中所有以``#``开头的预处理语句会进行展开。  
+我盲猜你对宏没什么好感，你觉得这玩意儿展开太麻烦，还得加一对括号。``gcc``也不是没意识到这件事，于是提供了一个flag进行宏展开：
+```C
+gcc -E hello.c -o hello.i
+```
+当我们使用``vim``打开``hello.i``时可以发现``stdio.h``被直接展开塞进了我们原本的C程序。
+
+### 编译
+
+编译是将C程序转化为汇编程序的过程。
+```C
+gcc -S hello.i -o hello.S
+```
+一般的，汇编文件习惯使用``.S``或者``.asm``后缀进行表示。当你使用``vim``打开汇编文件时可以发现一些汇编指令，大概长这样：
+```assembly
+leaq    .LC0(%rip), %rax
+movq    %rax, %rdi
+call    puts@PLT
+movl    $0, %eax
+popq    %rbp
+```
+汇编语言规定了一些段和跳转点，除此之外的每一句汇编指令都对应着硬件层面的一个小操作，比如在寄存器之间挪动值，自增自减，或者是管理栈。  
+
+汇编语言本质上是机器语言的助记符号，机器语言是0和1的串。恰当地规划汇编指令可以达到优化程序性能的作用。  
+gcc提供了一系列优化程序性能的flag，按照优化的激进程度可以分为``-O1`` ``-O2`` ``-O3`` ``-Ofast``
+```shell
+gcc -S hello.c -O1 -o hello_O1.S
+gcc -S hello.c -O2 -o hello_O2.S
+gcc -S hello.c -O3 -o hello_O3.S
+gcc -S hello.c -Ofast -o hello_Ofast.S
+vim <asm_file_name>.S
+```
+
+### 汇编
+
+汇编文件通过汇编器转换为可重定位目标程序，一般使用``.o``作为后缀。
+```C
+gcc -c hello.S -o hello.o
+```
+如果你打开``hello.o``会发现里面是乱码，但是我们依然有办法大概看看它是什么。
+``objdump``是一个反汇编软件，它可以将机器语言反向转译为汇编语言。``-d``为反汇编(disassemble)，``-S``为指定源文件(Source File)：
+```shell
+objdump -dS hello.o
+```
+或者还可以使用``hexdump``将文件中的数据转化为十六进制数进行显示：
+```shell
+hexdump hello.o
+```
+注意文件本身的表示内容，``hexdump hello.S``得到的是汇编语言的十六进制ascii，而``hexdump hello.o``得到的是机器码的十六进制表示  
+
+### 链接
+
+最后，hello.o会和printf.o进行链接，形成可执行文件。特殊的，由于我们的printf.o是标准库的一部分，所以我们可以不加任何flag直接进行使用  
+```shell
+gcc hello.o -o hello
+```
+这里便形成了可执行文件。
+
+你好奇printf.o在哪儿吗？大致的方法是读取目标程序的符号表(symbol table)，再把输出进行模式匹配  
+```shell
+cd /lib/x86_64-linux-gnu
+ls libc.so.6
+nm -D libc.so.6 | grep printf
+```
+
+看起来上面的内容逻辑自洽的不得了，不是吗？然而，我们的讲述某种意义上还是宏观层面的。如果你真的想深入编译器的每一处细节，你可以用这个：
+```shell
+gcc -fdump-tree-all hello.c
+```
 
 ## debug
 
+C中最致命的错误无疑是段错误(Segmentation Fault)，段错误会在任何非法内存访问时（如野指针，数组越界，二次free等）产生且一般没有有效的提示信息，调试段错误需要一些工具帮助我们。
+
+我们提供了两段示范程序，一段是指针使用不当，一段是栈溢出：
+
+```C
+int main()
+{
+   int *p = malloc(sizeof(int));
+   free(p);
+   *p = 23;
+   return 0;
+}
+```
+
+```C
+void f1();
+void f2();
+void f1()
+{
+   f2();
+}
+void f2()
+{
+   f1();
+}
+
+int main()
+{
+   f1();
+   return 0;
+}
+```
+
 ### valgrind
 
-(TODO)
+你可以直接使用
+```shell
+valgrind ./<executable>
+```
+来检查可执行文件有没有内存泄漏问题，但是它只负责检查不负责改，而且输出的可读性比较差。修改的工作要交给gdb完成。
 
 ### gdb
 
@@ -76,6 +195,10 @@ gcc hello.c -o hello
 (TODO)
 
 ### Makefile
+
+(TODO)
+
+## 尾声
 
 (TODO)
 
