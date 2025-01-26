@@ -393,7 +393,7 @@ sudo mv /* /dev
 <a href="https://en.wikipedia.org/wiki/Windows_Subsystem_for_Linux">Windows Subsystem for Linux</a>  
 <a href="https://www.youtube.com/watch?v=tc4ROCJYbm0&t=1s">UNIX的官方介绍</a>  
 <a href="https://www.bilibili.com/video/BV1U94y1a7CZ/?vd_source=8204d1a0fabafab989c42faaec9e4a8c">终端是什么？</a>  
-<a href="https://dsf.berkeley.edu/cs262/unix.pdf">The UNIX Time-Sharing System</a>，UNIX领域最重要的论文之一  
+<a href="https://linux.vbird.org/linux_basic/centos7/">鸟哥的Linux私房菜</a> 中文Linux教材中为数不多的正经货，不过它所基于的Linux Distro，也就是CentOS已经于2024年6月30日起无限期停止维护。如果你要看的话，选读普适于整个Linux界的知识  
 <a href="https://github.com/jlevy/the-art-of-command-line/blob/master/README-zh.md">命令行的艺术</a>  
 <a href="https://github.com/ryanhanwu/How-To-Ask-Questions-The-Smart-Way/blob/main/README-zh_CN.md">提问的智慧</a> 和 <a href="https://github.com/tangx/Stop-Ask-Questions-The-Stupid-Ways">别像弱智一样提问</a>  
 <a href="https://zhuanlan.zhihu.com/p/442505028">如何对抗技术焦虑？像业余者那样自信！</a>

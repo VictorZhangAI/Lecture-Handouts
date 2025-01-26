@@ -186,7 +186,10 @@ valgrind ./<executable>
 
 ### gdb
 
-(TODO)
+在正式使用之前请将目标程序带上 ``-g`` flag重新编译以产生符号表  
+```shell
+gcc -g hello.c -o hello
+```
 
 ## 大型工程的构建
 
