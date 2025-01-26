@@ -143,38 +143,9 @@ gcc -fdump-tree-all hello.c
 
 ## debug
 
-C中最致命的错误无疑是段错误(Segmentation Fault)，段错误会在任何非法内存访问时（如野指针，数组越界，二次free等）产生且一般没有有效的提示信息，调试段错误需要一些工具帮助我们。
+当你遇到bug的时候你会怎么做，直接盯着看吗？这种debug的方法显然是不科学的。我们使用计算机的初衷就是使用自动化的手段来减轻人类劳动的，但是眼睛直接看的方法显然是加重了人类劳动的。一种最朴素的debug方法是使用``printf``打印临时变量的值，但这种方法建立在一种对“某个地方一定有问题”的怀疑之上。如果你第一反应没感觉到哪儿出问题了，你就应该借助一些更加强大的工具了。
 
-我们提供了两段示范程序，一段是指针使用不当，一段是栈溢出：
-
-```C
-int main()
-{
-   int *p = malloc(sizeof(int));
-   free(p);
-   *p = 23;
-   return 0;
-}
-```
-
-```C
-void f1();
-void f2();
-void f1()
-{
-   f2();
-}
-void f2()
-{
-   f1();
-}
-
-int main()
-{
-   f1();
-   return 0;
-}
-```
+一般的语法错误可以在warning和error中发现，逻辑错误可以通过结果进行倒推。但是如果是段错误呢？C中最致命的错误无疑是段错误(Segmentation Fault)，段错误会在任何非法内存访问时（如野指针，数组越界，二次free等）产生且一般没有有效的提示信息。科学的工具在这时就显得很重要了。
 
 ### valgrind
 
@@ -189,6 +160,96 @@ valgrind ./<executable>
 在正式使用之前请将目标程序带上 ``-g`` flag重新编译以产生符号表  
 ```shell
 gcc -g hello.c -o hello
+```
+
+我们先看第一个示范程序，它计算1到100的和  
+```C
+#include<stdio.h>
+int main()
+{
+   int sum;
+   for(int i = 1; i <= 100; i++)
+      sum += i;
+   printf("sum = %d\n", sum);
+   return 0;
+}
+```
+但是当我们输入``.sum``时显示了``sum = -192810638``，这显然是不正常的  
+我们使用
+```shell
+gdb ./sum
+```
+来启动调试器  
+使用``start``启动程序，再使用``layout src``进行源码查看。  
+在gdb中有大量的指令都有缩写，比如单步执行的``step``可以缩写为``s``，单步执行在见到函数的时候会直接进入函数内部。你可以在gdb中敲回车来重复上一条指令  
+当``i = 1``时sum理论上是1，但是当我们使用``print sum``或者``p sum``来查看变量的值时会发现它是一个垃圾值，初步判断是变量未经初始化就直接使用的问题，调试结束，使用``exit``或者``quit``退出gdb。 
+
+第二个示范程序：
+```C
+#include<stdlib.h>
+
+int main()
+{
+  int *p = NULL;
+  p++;
+  *p = 114514;
+  return 0;
+}
+```
+这里的程序在编译后运行直接产生了``Segmentation Fault``，我们老样子：
+```shell
+gdb ./segment
+start 
+layout src
+```
+使用单步调试，在第七行的时候程序出现了段错误，初步猜测是指针陷阱。  
+重新使用``start``开始程序，但是我们在第7行打个断点，然后让程序不间断运行，直到断点处停止
+```shell
+break 7
+continue
+```
+我们看看p里头到底发生了什么，鉴于这是一个指针，我们使用十六进制(hexadecimal)表示法进行打印  
+```shell
+p/x p
+p/x *p
+```
+第一个结果是0x4，第二个结果是一个错误信息，p出现了非法的内存访问，调试结束  
+
+第三个示范程序：
+```C
+#include <stdio.h>
+char input[5];
+
+int sum_all()
+{
+	int sum = 0, i = 0;
+	for (i = 0; input[i] != '\0'; i++) {
+		if (input[i] < '0' || input[i] > '9') {
+			printf("Invalid input!\n");
+			sum = -1;
+			break;
+		}
+		sum = sum*10 + input[i] - '0';
+	}
+}
+
+int main()
+{
+	scanf("%s", input);
+	int sum = sum_all();
+	printf("input=%d\n", sum);
+	return 0;
+}
+```
+这个示范程序不仅在输入非数字时会报错，还会在接受过长的字符串时报错，我们老样子：
+```shell
+gdb ./buffer
+start 
+layout src
+```
+这里有一个函数，如果程序中有大量的函数，我们就应该先进行粗调，使用``n``在单步执行的时候将函数当成单个语句一并执行  
+```shell
+n
 ```
 
 ## 大型工程的构建
