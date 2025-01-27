@@ -17,3 +17,4 @@ Spring 2025:
 ## Contributors:
 <a href="https://github.com/VictorZhangAI">VZstless</a>
 <a href="https://github.com/Utahamo">Utahamo</a>
+<a href="https://github.com/Shiokiri">Shiokiri</a>
