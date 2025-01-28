@@ -1,3 +1,4 @@
+CC=gcc
 MAIN=main
 OBJ= main.o\
      gcd.o\

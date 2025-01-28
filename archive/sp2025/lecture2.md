@@ -394,6 +394,7 @@ lcm.o: lcm.c gcd.h
 你还可以尝试这时候修改某个源文件，然后再``make``，你的新增内容会被自动补充进编译产物中。  
 但是这还不够。如果仅仅是上面这样的写法那还不如直接一句gcc呢。make的强大之处在于它某种意义上也是一种编程语言，刚才的makefile就可以改写成这样：
 ```makefile
+CC=gcc
 MAIN=main
 OBJ= main.o\
      gcd.o\
