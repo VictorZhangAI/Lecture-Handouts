@@ -218,6 +218,227 @@ p/x *p
 第三个示范程序：
 ```C
 #include <stdio.h>
+ 
+int main()
+{
+    int sum = 0, i = 0;
+    char input[5];
+ 
+    scanf("%s", input);
+    for (i = 0; input[i] != '\0'; i++) {
+        if (input[i] < '0' || input[i] > '9') {
+            printf("Invalid input!\n");
+            sum = -1;
+            break;
+        }
+        sum = sum*10 + input[i] - '0';
+    }
+    printf("input=%d\n", sum);
+    return 0;
+}
+```
+这个示范程序不仅在输入非数字时会报错，还会在接受过长的字符串时报错，我们老样子：
+```shell
+gdb ./buffer
+start 
+layout src
+```
+这里有大量的标准库函数。它们常常涉及到从一些较为底层的操作，如果使用单步执行会浪费大量时间。我们使用``next``或者``n``在单步执行的时候将函数当成单个语句进行跳过，当然，如果你不小心使用了单步执行也可以使用``finish``跳出函数  
+```shell
+n
+#...
+# stack smashing detected
+# program received SIGABRT
+```
+
+程序返回了一个报错，甚至于在调试过程中gdb的显示也出现了一点异常。在网络上查询报错信息得知这是缓冲区溢出(buffer overflow)错误，接下来检查``input[]``的内容。我们依然输入一个过长的字符串，不过在输入后我们直接查看字符串的内容：
+```shell
+enulvrneiava
+p input
+```
+还没意识到问题在哪儿吗？如果没意识到，重新开始程序，输入一个能够容纳进input的字符串，再打印字符串的内容。没错！``\0``这个表示字符串结束的空字符不见了！  
+缓冲区溢出是计算机中最为普遍且致命的错误之一。Windows系统的“永恒之蓝”漏洞本质上就是一个缓冲区溢出。试想一下，当示范程序的循环变量并没有找到空字符而使得``input[i]``按照顺序乱跑会发生什么结果，而如果恰好这个乱跑的路径上包含一个恶意脚本的起始地址呢？  
+不说别的，我们在练习题中放置了另一个程序，看起来只是将我们的示例程序打包成模块化的函数，但是当这个练习程序发生缓冲区溢出时甚至可以使gdb崩溃。  
+在日常的编程活动中我们应当留出足够的缓冲区空间保证字符串的正常储存，还应当避免使用不安全的库函数，比如将不进行缓冲区溢出检查的``gets()``（已于C11标准中被禁用）更换为``fgets()``。  
+我们进入最后一个示例程序吧  
+```C
+void f1();
+void f2();
+void f1()
+{
+   f2();
+}
+void f2()
+{
+   f1();
+}
+
+int main()
+{
+   f1();
+   return 0;
+}
+```
+老样子：
+```shell
+gdb ./stack
+start
+layout src
+```
+直接用``n``，报段错误，直接用``s``，发现除了f1()函数调用和f2()函数调用之外没有任何其他的有效信息。但是当我们使用了``backtrace``进行栈回溯的时候发现栈回溯记录上多了大量且重复的函数名称，合理怀疑是无穷递归导致了栈溢出。  
+每次函数被调用时会创建一个栈帧(stack frame)，在栈帧中存储函数的返回地址，局部变量等信息。而当函数返回时会跳转进入返回地址，将栈中的信息恢复并销毁这个栈帧。如果函数一直进行递归，那么栈空间不断增长最终会导致栈溢出。这里涉及到了程序的机器级表示，简单总结就是“递归过深会导致栈溢出”。如果你想了解更多关于程序的机器级表示的内容可以参考《深入理解计算机系统》的第三章。  
+
+## 大型工程的构建
+
+你会怎么构建一个大型工程？把所有的函数都写进一个``.c``里头，占了一千多行，还是``#include``一个``.c``文件？那头文件是啥？  
+Linux其实本质上就是一个大型的C程序，涉及到的源文件就有一万多个。这个超大型的工程又是如何进行组织的呢？
+
+### 头文件
+
+还记得预处理步骤吗？如果你仔细观察``hello.i``文件就会发现展开结果只有大量的函数声明。如果将函数的内部结构也直接放入头文件会大大降低预处理的效率。头文件就是为了解决这样一个问题诞生的。  
+
+我们需要两个文件，一个是``.h``，另一个是与它同名的``.c``。在``.h``中放入函数的声明，类型别名和结构体等，在``.c``中``#include``这个``.h``并写入这些函数的实现。为了简化问题，我们一个文件中只声明一个函数  
+```C
+//gcd.h
+int gcd(int a, int b);
+```
+```C
+//gcd.c
+#include"gcd.h"
+int gcd(int a, int b)
+{
+   while (b != 0) {
+        int temp = b;
+        b = a % b;
+        a = temp;
+    }
+    return a;
+}
+```
+```C
+//main.c
+#include<stdio.h>
+#include"gcd.h"
+
+int main()
+{
+	printf("gcd 16, 21: %d\n", gcd(16, 21));
+	return 0;
+}
+```
+include后头的``<>``和``""``分别指代了首先从系统搜索头文件和首先从本文件夹搜索头文件。  
+还记得链接吗？我们的``gcd``显然不是标准库的一部分，为了使``gcd.o``和``main.o``建立链接，我们的编译指令应该写成：
+```shell
+gcc main.c gcd.c -o main
+```
+
+那如果我们又写了``lcm``呢？
+
+```C
+//lcm.h
+int gcd(int a, int b);
+int lcm(int a, int b);
+```
+
+```C
+//lcm.c
+#include"gcd.h"
+#include"lcm.h"
+
+int lcm(int a, int b)
+{
+   return (a * b) / gcd(a, b);
+}
+```
+
+```C
+//main.c
+...
+#include"lcm.h"
+...
+   printf("lcm 16, 21: %d\n", lcm(16, 21));
+   return 0;
+```
+如法炮制：
+```shell
+gcc main.c gcd.c lcm.c -o main
+```
+报错了！显然这里的gcd被重复定义了。你会怎么做，删掉``lcm.h``里的gcd？确实可行，不过如果你看过C的标准库就会发现很多的函数在不同的头文件中都在被重复定义。为了让这些重复定义不互相冲突，我们就要使用条件预处理。  
+
+> 这个报错也可能不出现，查询可得gcc会优化重复定义，但是我们依然应当掌握规范的写法  
+
+其实很简单，只要把整个头文件装在``#ifndef``块中就行了
+```C
+#ifndef __GCD_H__
+#define __GCD_H__
+//头文件正文
+#endif
+```
+
+另一个问题，你不觉得刚才的gcc命令很啰嗦吗？对于Linux这种有一万多个源文件的工程来说这种单句的指令是灾难性的！我们需要定义一套规则进行编译。
+
+### Makefile
+使用``vim makefile``编写makefile，编写每个源文件生成中间文件时的依赖文件，比如``main``显然依赖于``main.o``, ``gcd.o``和``lcm.o``的编译产物进行链接：
+```makefile
+main: main.o gcd.o lcm.o
+	gcc main.o gcd.o lcm.o -o main
+main.o: main.c gcd.h lcm.h
+	gcc -c main.c -o main.o
+gcd.o: gcd.c
+	gcc -c gcd.c -o gcd.o
+lcm.o: lcm.c gcd.h
+	gcc -c lcm.c -o lcm.o
+```
+保存之后，你就可以直接使用``make``进行编译了。（友情提示：makefile只认识回车缩进不认识空格缩进）  
+
+你还可以尝试这时候修改某个源文件，然后再``make``，你的新增内容会被自动补充进编译产物中。  
+但是这还不够。如果仅仅是上面这样的写法那还不如直接一句gcc呢。make的强大之处在于它某种意义上也是一种编程语言，刚才的makefile就可以改写成这样：
+```makefile
+MAIN=main
+OBJ= main.o\
+     gcd.o\
+     lcm.o
+HEAD=main.c\
+     gcd.h\
+     lcm.h
+CFLAGS= -g -Wall -Werror -std=c11
+
+main: $(OBJ)
+	$(CC) $(CFLAGS) $(OBJ) -o $(MAIN)
+main.o: $(HEAD)
+	$(CC) $(CFLAGS) -c main.c -o main.o
+gcd.o: gcd.c
+	$(CC) $(CFLAGS) -c gcd.c -o gcd.o
+lcm.o: lcm.c gcd.h
+	$(CC) $(CFLAGS) -c lcm.c -o lcm.o
+
+.PHONY: clean
+clean:
+	rm -rf *.o main
+```
+开头我们定义了变量，在规则中我们可以使用``$(variable)``的方式将变量的内容进行展开，还有一个伪目标``clean``，你可以使用``make clean``调用它来清理编译产物只留下源码。  
+想想这样有什么好处——以后我们如果再新添加了什么源文件只要新写一条规则，然后在变量中补充源文件的名称就行了。  
+关于makefile更详细的讲解可以看看拓展阅读中的《跟我一起写Makefile》进行学习。  
+
+## 尾声
+
+事实上讲C并不是一件容易的事情，gcc的强大还是超乎了我的想象，许多的flag我也是在写讲义的时候才第一次知道。  
+C的另一块硬骨头是它和系统底层的极其紧密的联系。或者说，C是一门伪装成高级语言的汇编语言。再激进一点儿，没有对计算机系统全方位的认识，你写不出高质量的C代码。关于C，乃至计算机系统的全貌，可以参考拓展阅读中的《深入理解计算机系统》和《Linux C编程一站式学习》两本书。  
+如果你发现讲义中有什么问题欢迎与我联系，你将有机会列入Contributors列表。两份讲义对应的Github repo将在下课后更改为所有人可见。  
+祝大家学有所成，也希望大家多多水群，踊跃发言，我们下一次社团公开课再见。
+
+公开课群号：(TODO)  
+电脑协会1群（已满）：(TODO)  
+电脑协会2群：(TODO)  
+
+## 练习题
+
+### 不止是C
+
+(1)emacs是另一个将快捷键使用到炉火纯青的编辑器，和vim不同，emacs追求极致的扩展性，甚至为了扩展性它的本体就要占据117MB的空间。如果有兴趣可以尝试以下emacs  
+(2)尝试触发这个程序的缓冲区溢出漏洞：  
+```C
+#include <stdio.h>
 char input[5];
 
 int sum_all()
@@ -231,6 +452,7 @@ int sum_all()
 		}
 		sum = sum*10 + input[i] - '0';
 	}
+	return sum;
 }
 
 int main()
@@ -241,37 +463,11 @@ int main()
 	return 0;
 }
 ```
-这个示范程序不仅在输入非数字时会报错，还会在接受过长的字符串时报错，我们老样子：
-```shell
-gdb ./buffer
-start 
-layout src
-```
-这里有一个函数，如果程序中有大量的函数，我们就应该先进行粗调，使用``next``或者``n``在单步执行的时候将函数当成单个语句一并执行  
-```shell
-n
-```
-(TODO)
-## 大型工程的构建
+你的gdb还好吗？由此请思考这样一个问题：
 
-### 头文件
+> 为什么大型工程很少使用全局变量？
 
-(TODO)
-
-### Makefile
-
-(TODO)
-
-## 尾声
-
-(TODO)
-
-## 练习题
-
-### 不止是C
-
-(1)emacs是另一个将快捷键使用到炉火纯青的编辑器，和vim不同，emacs追求极致的扩展性，甚至为了扩展性它的本体就要占据117MB的空间。如果有兴趣可以尝试以下emacs  
-(2)  
+(3)展开示例的makefile，和你输入make之后产生的命令比对一下看看你的展开是不是正确的
 (?)大型练习：你在大型项目中总有可能会有思路走偏或者bug藏在层层函数和抽象之后的情况。如果有那么一个软件可以帮助你回到最近的没出错的那一刻重新开发，那该多好！基于这个思想，版本管理系统诞生了。查找资料，了解git的使用方法。（我并不想在课上讲解git，很多时候git的命令乃至使用命令的顺序都是高度公式化的，如果我讲的话大概率也和念官方文档差不多）
 
 ### 互联网
@@ -286,6 +482,7 @@ n
 <a href="https://colorcomputerarchive.com/repo/Documents/Books/The%20C%20Programming%20Language%20%28Kernighan%20Ritchie%29.pdf">The C Programming Language</a> 确切来说这本书不只是C，更像是《如何在Ken Thompson出生之前手搓UNIX标准库的一个小部分》  
 <a href="https://www.cs.sfu.ca/~ashriram/Courses/CS295/assets/books/CSAPP_2016.pdf">Computer Systems: A Programmer's Perspective</a> 借助C，了解计算机系统的全貌  
 <a href="https://akaedu.github.io/book/index.html">Linux C一站式学习</a> 一本堪称仁至义尽的中文C教材  
+<a href="https://seisman.github.io/how-to-write-makefile/index.html">跟我一起写Makefile</a>
 
 ## 实用链接
 
