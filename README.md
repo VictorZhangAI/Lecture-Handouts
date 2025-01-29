@@ -3,9 +3,9 @@
 ## Description
 
 This repo contains archives of handouts for HITWH Hi-Tech Computer Club Lectures.  
-Written in Markdown, generate pdf by <a href="https://github.com/jgm/pandoc">pandoc</a>.  
-Feel free to fork and pull request to this repo.  
-Post issues in official QQ group: (TODO)
+Written in Markdown, generate pdf by <a gref="https://marketplace.visualstudio.com/items?itemName=Deadpoulpe.custom-md-pdf">CUSTOM MD PDF</a> vscode plugin.  
+Feel free to fork this repo or use the handouts in YOUR club's open semester.  
+Post issues in official QQ group: (TODO)  
 
 ## Main Topics
 Spring 2025:  
