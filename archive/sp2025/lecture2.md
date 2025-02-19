@@ -291,13 +291,13 @@ layout src
 ## 大型工程的构建
 
 你会怎么构建一个大型工程？把所有的函数都写进一个``.c``里头，占了一千多行，还是``#include``一个``.c``文件？那头文件是啥？  
-Linux其实本质上就是一个大型的C程序，涉及到的源文件就有一万多个。这个超大型的工程又是如何进行组织的呢？
+Linux其实本质上就是一个大型的C程序，涉及到的源文件就有一万多个。这个超大型的工程又是如何进行组织的呢？  
 
 ### 头文件
 
 还记得预处理步骤吗？如果你仔细观察``hello.i``文件就会发现展开结果只有大量的函数声明。如果将函数的内部结构也直接放入头文件会大大降低预处理的效率。头文件就是为了解决这样一个问题诞生的。  
 
-我们需要两个文件，一个是``.h``，另一个是与它同名的``.c``。在``.h``中放入函数的声明，类型别名和结构体等，在``.c``中``#include``这个``.h``并写入这些函数的实现。为了简化问题，我们一个文件中只声明一个函数  
+我们需要两个文件，一个是``.h``，另一个是与它同名的``.c``。在``.h``中放入函数的定义，类型别名，结构体，全局变量和一些宏的定义，在``.c``中``#include``这个``.h``并写入这些函数的实现。为了简化问题，我们一个文件中只声明一个函数  
 ```C
 //gcd.h
 int gcd(int a, int b);
@@ -336,7 +336,6 @@ gcc main.c gcd.c -o main
 
 ```C
 //lcm.h
-int gcd(int a, int b);
 int lcm(int a, int b);
 ```
 
@@ -363,9 +362,37 @@ int lcm(int a, int b)
 ```shell
 gcc main.c gcd.c lcm.c -o main
 ```
-报错了！显然这里的gcd被重复定义了。你会怎么做，删掉``lcm.h``里的gcd？确实可行，不过如果你看过C的标准库就会发现很多的函数在不同的头文件中都在被重复定义。为了让这些重复定义不互相冲突，我们就要使用条件预处理。  
+这里的包含关系都是一层，但如果是两层呢？两层及以上的时候你的头文件就可能会被多次包含......  
+```C
+//score.h
+#define N 100
 
-> 这个报错也可能不出现，查询可得gcc会优化重复定义，但是我们依然应当掌握规范的写法  
+typedef struct {
+    int x, y;
+} Point;
+
+extern int score;
+extern int a;
+```
+```C
+//score.c
+int score = 85;
+int a;
+```
+```C
+//gcd.h
+#include"score.h"
+```
+```C
+//lcm.h
+#include"score.h"
+```
+然后......  
+```shell
+gcc main.c gcd.c lcm.c score.c -o main
+```
+报错了！错误原因是``score``被重复声明了。展开一下可以看出``int score = 100``在``gcd.h`` 和 ``lcm.h`` 中都出现了。显然，我们应该在预处理的时候添加一个flag来避免重复包含。  
+
 
 其实很简单，只要把整个头文件装在``#ifndef``块中就行了
 ```C
@@ -378,16 +405,18 @@ gcc main.c gcd.c lcm.c -o main
 另一个问题，你不觉得刚才的gcc命令很啰嗦吗？对于Linux这种有一万多个源文件的工程来说这种单句的指令是灾难性的！我们需要定义一套规则进行编译。
 
 ### Makefile
-使用``vim makefile``编写makefile，编写每个源文件生成中间文件时的依赖文件，比如``main``显然依赖于``main.o``, ``gcd.o``和``lcm.o``的编译产物进行链接：
+使用``vim makefile``编写makefile，编写每个源文件生成中间文件时的依赖文件，比如``main``显然依赖于``main.o``, ``gcd.o``, ``lcm.o``和``score.o``的编译产物进行链接：
 ```makefile
-main: main.o gcd.o lcm.o
-	gcc main.o gcd.o lcm.o -o main
+main: main.o gcd.o lcm.o score.o
+   gcc main.o gcd.o lcm.o score.o -o main
 main.o: main.c gcd.h lcm.h
-	gcc -c main.c -o main.o
-gcd.o: gcd.c
-	gcc -c gcd.c -o gcd.o
-lcm.o: lcm.c gcd.h
-	gcc -c lcm.c -o lcm.o
+   gcc -c main.c -o main.o
+gcd.o: gcd.c score.h
+   gcc -c gcd.c -o gcd.o
+lcm.o: lcm.c gcd.h score.h
+   gcc -c lcm.c -o lcm.o
+score.o: score.c
+   gcc -c score.c -o score.o
 ```
 保存之后，你就可以直接使用``make``进行编译了。（友情提示：makefile只认识tab缩进不认识空格缩进）  
 
@@ -395,27 +424,29 @@ lcm.o: lcm.c gcd.h
 但是这还不够。如果仅仅是上面这样的写法那还不如直接一句gcc呢。make的强大之处在于它某种意义上也是一种编程语言，刚才的makefile就可以改写成这样：
 ```makefile
 CC=gcc
-MAIN=main
-OBJ= main.o\
-     gcd.o\
-     lcm.o
-HEAD=main.c\
-     gcd.h\
-     lcm.h
-CFLAGS= -g -Wall -Werror -std=c11
+CFLAGS=-std=c11 -w
+OBJ=main.o\
+    gcd.o\
+    lcm.o\
+    score.o
+HEADER=gcd.h\
+       lcm.h\
+       score.h
 
 main: $(OBJ)
-	$(CC) $(CFLAGS) $(OBJ) -o $(MAIN)
-main.o: $(HEAD)
-	$(CC) $(CFLAGS) -c main.c -o main.o
-gcd.o: gcd.c
-	$(CC) $(CFLAGS) -c gcd.c -o gcd.o
-lcm.o: lcm.c gcd.h
-	$(CC) $(CFLAGS) -c lcm.c -o lcm.o
+        $(CC) $(CFLAGS) $(OBJ) -o main
+main.o: $(HEADER)
+        $(CC) $(CFLAGS) -c main.c -o main.o
+gcd.o: $(HEADER)
+        $(CC) $(CFLAGS) -c gcd.c -o gcd.o
+lcm.o: $(HEADER)
+        $(CC) $(CFLAGS) -c lcm.c -o lcm.o
+score.o:
+        $(CC) $(CFLAGS) -c score.c -o score.o
 
 .PHONY: clean
 clean:
-	rm -rf *.o main
+        rm -rf $(OBJ) main
 ```
 开头我们定义了变量，在规则中我们可以使用``$(variable)``的方式将变量的内容进行展开，还有一个伪目标``clean``，你可以使用``make clean``调用它来清理编译产物只留下源码。  
 想想这样有什么好处——以后我们如果再新添加了什么源文件只要新写一条规则，然后在变量中补充源文件的名称就行了。  
@@ -429,8 +460,7 @@ C的另一块硬骨头是它和系统底层的极其紧密的联系。或者说�
 祝大家学有所成，也希望大家多多水群，踊跃发言，我们下一次社团公开课再见。
 
 公开课群号：(TODO)  
-电脑协会1群（已满）：(TODO)  
-电脑协会2群：(TODO)  
+电脑协会2群：760543989  
 
 ## 练习题
 
@@ -466,9 +496,9 @@ int main()
 ```
 你的gdb还好吗？由此请思考这样一个问题：
 
-> 为什么大型工程很少使用全局变量？
+> 为什么大型工程很少使用文件级全局变量？
 
-(3)展开示例的makefile，和你输入make之后产生的命令比对一下看看你的展开是不是正确的
+(3)展开示例的makefile，和你输入make之后产生的命令比对一下看看你的展开是不是正确的  
 (?)大型练习：你在大型项目中总有可能会有思路走偏或者bug藏在层层函数和抽象之后的情况。如果有那么一个软件可以帮助你回到最近的没出错的那一刻重新开发，那该多好！基于这个思想，版本管理系统诞生了。查找资料，了解git的使用方法。（我并不想在课上讲解git，很多时候git的命令乃至使用命令的顺序都是高度公式化的，如果我讲的话大概率也和念官方文档差不多）
 
 ### 互联网

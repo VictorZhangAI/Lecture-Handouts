@@ -26,7 +26,8 @@ wsl --set-default-version 2
 5.键入以下命令将Ubuntu-24.04导出到D盘  
 ```Powershell
 wsl --export Ubuntu-24.04 D:\Ubuntu2404.tar
-wsl --import Ubuntu-24.04 D:\WSL\Ubuntu2404 D:\Ubuntu2404.tar --version 2
+wsl --unregister Ubuntu-24.04
+wsl --import Ubuntu-24.04 D:\Ubuntu2404 D:\Ubuntu2404.tar --version 2
 ```
 
 6.这时Ubuntu中默认以root进行登录，将默认用户改为之前你所设置的用户
@@ -53,6 +54,7 @@ networkingMode=mirrored
 wsl -d Ubuntu-24.04
 ```
 之后，你便进入了Linux。对，你只需要命令行，也就是Linux Shell就能和Linux进行互动了。  
+如果你想回到Powershell，只需要使用``exit``命令即可
 无论什么系统，你大概率都会问出一个问题：<strong>我的XXX文件在哪儿？</strong>一个Windows用户的回答大概率会以磁盘的某个分区，比如“C盘”或者“D盘”开头，每当切换到一个子文件夹的时候就要使用``\``分割。比如：
 ```
 C:\Users\Lenovo\Applications\DevCpp
@@ -302,7 +304,7 @@ echo "This is another sentence" >> hello.txt
 管道使得你可以近乎随意地重定向命令的输出。前面的``tee``是一个例子，接下来还有一个：
 ```shell
 # ifconfig用于查看本机的网络信息
-ifconfig | net.txt
+ifconfig > net.txt
 ```
 
 想想看，同样的任务交给Windows你会怎么做？  
@@ -359,9 +361,8 @@ Just happy hacking, 像业余者一样自信（见拓展阅读）
 2000年，基于BSD的Darwin初版发行，成为了当今macOS的前身，2001年3月，macOS X发行（注：macOS X与前九代macOS有着从内核层面上的本质区别，前九代macOS是另一个闭源的操作系统）（没错，macOS是<a href="https://github.com/apple-oss-distributions/distribution-macOS">开源</a>的！）  
 总之，以UNIX为起点，我们熟知的计算机世界的一层地基被铺好了。
 
-公开课群号：(TODO)  
-电脑协会1群（已满）：(TODO)  
-电脑协会2群：(TODO)  
+公开课群号：(TODO)   
+电脑协会2群：760543989  
 
 ## 练习题
 
