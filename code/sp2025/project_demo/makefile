@@ -1,22 +1,24 @@
 CC=gcc
-MAIN=main
-OBJ= main.o\
-     gcd.o\
-     lcm.o
-HEAD=main.c\
-     gcd.h\
-     lcm.h
-CFLAGS= -g -Wall -Werror -std=c11
+CFLAGS=-std=c11 -w
+OBJ=main.o\
+    gcd.o\
+    lcm.o\
+    score.o
+HEADER=gcd.h\
+       lcm.h\
+       score.h
 
 main: $(OBJ)
-	$(CC) $(CFLAGS) $(OBJ) -o $(MAIN)
-main.o: $(HEAD)
+	$(CC) $(CFLAGS) $(OBJ) -o main
+main.o: $(HEADER)
 	$(CC) $(CFLAGS) -c main.c -o main.o
-gcd.o: gcd.c
+gcd.o: $(HEADER)
 	$(CC) $(CFLAGS) -c gcd.c -o gcd.o
-lcm.o: lcm.c gcd.h
+lcm.o: $(HEADER)
 	$(CC) $(CFLAGS) -c lcm.c -o lcm.o
+score.o:
+	$(CC) $(CFLAGS) -c score.c -o score.o
 
 .PHONY: clean
 clean:
-	rm -rf *.o main
+	rm -rf $(OBJ) main
