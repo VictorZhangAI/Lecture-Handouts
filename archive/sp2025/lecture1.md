@@ -97,6 +97,11 @@ clear
 ```shell
 cd /mnt/d
 ```
+那如果是我这时候 ``cd ~`` 了又该如何回到``/mnt/d``呢？你可以使用
+```shell
+cd -
+```
+来回到上一个你进入的目录。
 
 ### everything is a file
 > In Linux, everything is a file.
@@ -112,6 +117,16 @@ file，中文译为文件。如果你问AI在Linux中文件是什么，它大概
 剪切文件: ``mv <src_path> <dst_path>``  
 删除目录: ``rmdir <dir_name>``  
 删除文件: ``rm <filename>``
+这些命令还可以加上flag进行操作，比如我想把文件列成一个更长的表格，我就可以  
+```shell
+ls -l
+```
+这里的``l``就是long的缩写。
+或者如果你想删除一个目录及其中的所有文件，你可以使用
+```shell
+rm -rf <file_name>
+```
+其中 ``r`` 代表recursive，也就是递归地，而``f``是force的缩写，强制进行
 
 > 注意，这里的执行文件前面必须加``./``，否则系统默认这个被执行的文件在``/bin``目录下  
 
