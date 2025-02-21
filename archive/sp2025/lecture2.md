@@ -423,7 +423,7 @@ int a;
 ```shell
 gcc main.c gcd.c lcm.c score.c -o main
 ```
-报错了！错误原因是``score``被重复声明了。展开一下可以看出``int score = 100``在``gcd.h`` 和 ``lcm.h`` 中都出现了。显然，我们应该在预处理的时候添加一个flag来避免重复包含。  
+报错了！错误原因是``struct Point``被重复声明了。展开一下可以看出``struct Point``在``gcd.h`` 和 ``lcm.h`` 中都出现了。显然，我们应该在预处理的时候添加一个flag来避免重复包含。  
 
 
 其实很简单，只要把整个头文件装在``#ifndef``块中就行了
