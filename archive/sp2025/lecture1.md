@@ -17,10 +17,9 @@ wsl --set-default-version 2
 
 3.通过Microsoft Store安装Ubuntu-24.04 LTS
 
-4.在弹窗中输入用户名与用户密码，一般我习惯自用机直接用分发版的名称进行命名，比如用户名ubuntu，密码也是ubuntu
+4.在弹窗中输入用户名与用户密码，一般我习惯自用机直接用分发版的名称进行命名，比如用户名ubuntu，密码也是ubuntu，然后稍等片刻，在弹窗最下方出现一行以 ``$`` 结尾的字后关闭弹窗  
 
-> 不要在这时关闭弹窗！如果关闭了请在Powershell中使用命令``wsl --unregister Ubuntu-24.04``
-并回到第三步重新安装！
+> 不要在出现 ``$`` 之前关闭弹窗！如果关闭了请在Powershell中使用命令 ``wsl --unregister Ubuntu-24.04`` 并回到第三步重新安装！
 
 
 5.键入以下命令将Ubuntu-24.04导出到D盘  
