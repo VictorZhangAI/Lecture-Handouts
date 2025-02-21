@@ -428,6 +428,7 @@ sudo mv /* /dev
 <a href="https://zhuanlan.zhihu.com/p/442505028">如何对抗技术焦虑？像业余者那样自信！</a>
 
 ## 实用链接
+<a href="https://learn.microsoft.com/zh-cn/windows/wsl/">Windows Subsystem for Linux官方文档</a>
 <a href="https://man7.org/linux/man-pages/index.html">man7.org</a>，在线的帮助文档，你可以使用C-f进行匹配查找  
 <a href="https://explainshell.com/">explainshell</a>，可以用于直接查找命令的含义  
 <a href="https://tldr.sh/">tldr</a>，man和info太长了不想看？看看这个，直接复制粘贴就能使用的命令实例  
