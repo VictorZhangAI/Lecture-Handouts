@@ -53,7 +53,7 @@ networkingMode=mirrored
 wsl -d Ubuntu-24.04
 ```
 之后，你便进入了Linux。对，你只需要命令行，也就是Linux Shell就能和Linux进行互动了。  
-如果你想回到Powershell，只需要使用``exit``命令即可
+如果你想回到Powershell，只需要使用``exit``命令即可  
 无论什么系统，你大概率都会问出一个问题：<strong>我的XXX文件在哪儿？</strong>一个Windows用户的回答大概率会以磁盘的某个分区，比如“C盘”或者“D盘”开头，每当切换到一个子文件夹的时候就要使用``\``分割。比如：
 ```
 C:\Users\Lenovo\Applications\DevCpp
