@@ -317,10 +317,15 @@ echo "This is an English Sentence" > hello.txt
 ```shell
 echo "This is another sentence" >> hello.txt
 ```
-管道使得你可以近乎随意地重定向命令的输出。前面的``tee``是一个例子，接下来还有一个：
+管道使得你可以近乎随意地重定向命令的输出，目标可以是一个文件，也可以是另一个命令行工具。前面的``tee``是一个例子，接下来还有一个：
 ```shell
 # ifconfig用于查看本机的网络信息
 ifconfig > net.txt
+```
+或者重定向到另一个命令行工具中，再进行排序。我们查看本机网络信息，并晒选以ether开头的信息，然后以字典序进行排序
+```shell
+ifconfig | grep ether* | sort 
+# grep用来过滤文本，sort在没有flag的时候用来对文本进行字典序升序排序
 ```
 
 想想看，同样的任务交给Windows你会怎么做？  
