@@ -18,3 +18,4 @@ Spring 2025:
 <a href="https://github.com/VictorZhangAI">VZstless</a>
 <a href="https://github.com/Utahamo">Utahamo</a>
 <a href="https://github.com/Shiokiri">Shiokiri</a>
+<a href="https://github.com/wandering-the-earth">wandering-the-earth</a>
