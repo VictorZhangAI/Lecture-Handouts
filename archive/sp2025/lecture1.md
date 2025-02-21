@@ -193,7 +193,7 @@ Ubuntu和Debian的包管理器是apt
 ```shell
 # backup
 # this command is suitable for Ubuntu-24.04
-sudo mv /etc/apt/sources.list.d/ubuntu.sources /etc/apt/sources.list.d/ubuntu.sources.bak
+sudo cp /etc/apt/sources.list.d/ubuntu.sources /etc/apt/sources.list.d/ubuntu.sources.bak
 ```
 然后使用``nano``编辑软件源列表
 ```shell
