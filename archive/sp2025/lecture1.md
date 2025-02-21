@@ -377,7 +377,7 @@ Just happy hacking, 像业余者一样自信（见拓展阅读）
 2000年，基于BSD的Darwin初版发行，成为了当今macOS的前身，2001年3月，macOS X发行（注：macOS X与前九代macOS有着从内核层面上的本质区别，前九代macOS是另一个闭源的操作系统）（没错，macOS是<a href="https://github.com/apple-oss-distributions/distribution-macOS">开源</a>的！）  
 总之，以UNIX为起点，我们熟知的计算机世界的一层地基被铺好了。
 
-公开课群号：(TODO)   
+公开课群号：967768744   
 电脑协会2群：760543989  
 
 ## 练习题
