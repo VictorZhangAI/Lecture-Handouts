@@ -327,8 +327,15 @@ ifconfig > net.txt
 ifconfig | grep ether* | sort 
 # grep用来过滤文本，sort在没有flag的时候用来对文本进行字典序升序排序
 ```
+不够，还不够......
+```shell
+ifconfig | grep ether* | sort | tee ethernet.txt | wc -l
+wc -m < ethernet.txt
+# wc -l统计输入文本的行数，wc -m统计输入文本的字符数
+```
+你真的感觉到你在使用“命令行工具”吗？如果有的话，你感觉到文件的输出和命令行工具的输出的区别了吗？这就是对UNIX哲学中“Everything is a file”的更深层次的认识。不管你是狭义的“文件”，目录，命令行工具乃至I/O外设，它们共享着近乎统一的数据结构和统一的交互方式。  
 
-想想看，同样的任务交给Windows你会怎么做？  
+想想看，同样的任务交给Windows你会怎么做？而在这个过程中，你又要按多少次C-c和C-v呢？    
 
 再比方说，你有一个新的项目，这个项目的文件夹有如下的层次关系：
 ```
@@ -351,7 +358,7 @@ ifconfig | grep ether* | sort
 ```shell
 mkdir -p bin util/lib cache exe/gui/log exe/cli/trace
 ```
-这一句话，那Windows呢？
+这一句话，那Windows呢？你要进出文件夹多少次，然后按多少次新建文件夹呢？  
 
 Linux拥有严格的用户策略，虽说还是时常爆出漏洞，但至少它是清晰的。  
 Linux对分时多任务的支持比Windows强，DOS作为一个1996年发行的计算机系统依然仅支持单次单个作业  
@@ -391,7 +398,7 @@ Just happy hacking, 像业余者一样自信（见拓展阅读）
 
 ### Linux
 (1)思考一下，磁盘分区真的有必要吗，为什么Windows时至今日都在保留磁盘分区这个设定？  
-(2)在``man``中查看``printf``相关的内容  
+(2)分别在 ``man 1`` 和 ``man 3`` 中查看``printf``相关的内容  
 (3)分别使用``tree``和``pstree``列出当前文件和当前进程  
 (4)了解通配符相关的内容，尝试列出你的某个目录中以r开头以c结尾的文件  
 (5)使用``lscpu``查看本机CPU和高速缓存相关的信息  
