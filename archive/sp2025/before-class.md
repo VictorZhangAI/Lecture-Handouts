@@ -1,5 +1,9 @@
 # 课前准备
 
+(注：下文中C指代ctrl，F指代fn，W指代windows，A指代alt)
+
+> 这是一个Markdown写成的讲义，你可以将它线上转化为pdf，或者使用``vscode``的Markdown侧边预览进行查看。如果你想获得更美观的视觉体验还可以试试<a href="https://marktext.weero.net/download/">MarkText</a>
+
 时间：2月24日18:00，2月25日18:00  
 地点：大活327
 
